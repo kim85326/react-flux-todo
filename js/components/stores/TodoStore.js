@@ -1,7 +1,6 @@
 import { EventEmitter } from 'events';
 import TodoActionTypes from '../actions/TodoActionTypes';
 import AppDispatcher from '../dispatcher/AppDispatcher';
-import Todo from '../Todo';
 
 let _store = {
 	todos: []
