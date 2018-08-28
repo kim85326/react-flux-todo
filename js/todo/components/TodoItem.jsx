@@ -1,5 +1,5 @@
 import React from 'react';
-import TodoAction from './actions/TodoActions';
+import TodoAction from '../TodoActions';
 
 class TodoItem extends React.Component{
 	constructor(props){

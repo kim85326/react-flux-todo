@@ -1,7 +1,7 @@
 import React from 'react';
 import AddTodo from './AddTodo';
 import TodoList from './TodoList';
-import TodoStore from './stores/TodoStore';
+import TodoStore from '../TodoStore';
 
 class Todo extends React.Component{
 	constructor(){
@@ -9,18 +9,18 @@ class Todo extends React.Component{
 		this.state = {
 			todos: TodoStore.getTodos()
 		};
-		this.HandleChangeTodos = this.HandleChangeTodos.bind(this);
+		this.handleChangeTodos = this.handleChangeTodos.bind(this);
 	}
 
 	componentDidMount(){
-		TodoStore.addChangeListener(this.HandleChangeTodos);
+		TodoStore.addChangeListener(this.handleChangeTodos);
 	}
 
 	componentWillUnmount(){
-		TodoStore.removeListener(this.HandleChangeTodos);
+		TodoStore.removeListener(this.handleChangeTodos);
 	}
 
-	HandleChangeTodos(){
+	handleChangeTodos(){
 		this.setState({
 			todos: TodoStore.getTodos()
 		});

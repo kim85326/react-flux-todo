@@ -1,5 +1,5 @@
 import TodoActionTypes from './TodoActionTypes';
-import AppDispatcher from '../dispatcher/AppDispatcher';
+import AppDispatcher from '../common/AppDispatcher';
 
 const Actions = {
 	addTodo(title){

@@ -1,10 +1,12 @@
 import { EventEmitter } from 'events';
-import TodoActionTypes from '../actions/TodoActionTypes';
-import AppDispatcher from '../dispatcher/AppDispatcher';
+import TodoActionTypes from './TodoActionTypes';
+import AppDispatcher from '../common/AppDispatcher';
 
 let _store = {
 	todos: []
 }
+
+const CHANGE_EVENT = "CHANGE_EVENT";
 
 class TodoStoreClass extends EventEmitter{
 	addChangeListener(callback){
@@ -15,32 +17,14 @@ class TodoStoreClass extends EventEmitter{
 		this.removeListener("CHANGE_EVENT", callback);
 	}
 
+	emitChange(){
+		this.emit(CHANGE_EVENT);
+	}
+
 	getTodos(){
 		return _store.todos;
 	}
 }
-
-AppDispatcher.register((action) => {
-	switch(action.type){
-		case TodoActionTypes.ADD_TODO:
-			let title = action.title.trim();
-			if(title){
-				addTodo(title);
-				TodoStore.emit("CHANGE_EVENT");
-			}
-			break;
-		case TodoActionTypes.DELETE_TODO:
-			deleteTodo(action.id);
-			TodoStore.emit("CHANGE_EVENT");
-			break;
-		case TodoActionTypes.UPDATE_TODO:
-			updateTodo(action.id, action.isCompleted);
-			TodoStore.emit("CHANGE_EVENT");
-			break;
-		default:
-    		return true;
-	}
-});
 
 function addTodo(title){
 	const newTodo = {
@@ -64,6 +48,23 @@ function updateTodo(id, isCompleted){
 	);
 	_store.todos[index].isCompleted = isCompleted;
 }
+
+AppDispatcher.register((action) => {
+	switch(action.type){
+		case TodoActionTypes.ADD_TODO:
+			addTodo(action.title);
+			break;
+		case TodoActionTypes.DELETE_TODO:
+			deleteTodo(action.id);
+			break;
+		case TodoActionTypes.UPDATE_TODO:
+			updateTodo(action.id, action.isCompleted);
+			break;
+		default:
+    		return true;
+	}
+	TodoStore.emitChange();
+});
 
 const TodoStore = new TodoStoreClass();
 

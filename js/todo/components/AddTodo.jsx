@@ -1,8 +1,7 @@
 import React from 'react';
-import TodoAction from './actions/TodoActions';
+import TodoAction from '../TodoActions';
 
 class AddTodo extends React.Component{
-
 	constructor(){
 		super();
 		this.state = {
@@ -19,16 +18,23 @@ class AddTodo extends React.Component{
 	}
 
 	handleClick(){
-		TodoAction.addTodo(this.state.title);
-		this.setState({
-			title: ""
-		});
+		let title = this.state.title.trim();
+		if(title){
+			TodoAction.addTodo(title);
+			this.setState({
+				title: ""
+			});
+		}
 	}
 
 	render(){
 		return (
 			<div>
-				<input type="text" onChange={this.handleChange} value={this.state.title}/>
+				<input 
+					type="text" 
+					onChange={this.handleChange} 
+					value={this.state.title}
+				/>
 				<button onClick={this.handleClick}>add todo</button>
 			</div>
 		);

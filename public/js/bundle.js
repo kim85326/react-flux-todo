@@ -19951,23 +19951,23 @@ var Todo = function (_React$Component) {
 		_this.state = {
 			todos: _TodoStore2.default.getTodos()
 		};
-		_this.HandleChangeTodos = _this.HandleChangeTodos.bind(_this);
+		_this.handleChangeTodos = _this.handleChangeTodos.bind(_this);
 		return _this;
 	}
 
 	_createClass(Todo, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			_TodoStore2.default.addChangeListener(this.HandleChangeTodos);
+			_TodoStore2.default.addChangeListener(this.handleChangeTodos);
 		}
 	}, {
 		key: 'componentWillUnmount',
 		value: function componentWillUnmount() {
-			_TodoStore2.default.removeListener(this.HandleChangeTodos);
+			_TodoStore2.default.removeListener(this.handleChangeTodos);
 		}
 	}, {
-		key: 'HandleChangeTodos',
-		value: function HandleChangeTodos() {
+		key: 'handleChangeTodos',
+		value: function handleChangeTodos() {
 			this.setState({
 				todos: _TodoStore2.default.getTodos()
 			});
@@ -20049,10 +20049,13 @@ var AddTodo = function (_React$Component) {
 	}, {
 		key: 'handleClick',
 		value: function handleClick() {
-			_TodoActions2.default.addTodo(this.state.title);
-			this.setState({
-				title: ""
-			});
+			var title = this.state.title.trim();
+			if (title) {
+				_TodoActions2.default.addTodo(title);
+				this.setState({
+					title: ""
+				});
+			}
 		}
 	}, {
 		key: 'render',
@@ -20060,7 +20063,11 @@ var AddTodo = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				null,
-				_react2.default.createElement('input', { type: 'text', onChange: this.handleChange, value: this.state.title }),
+				_react2.default.createElement('input', {
+					type: 'text',
+					onChange: this.handleChange,
+					value: this.state.title
+				}),
 				_react2.default.createElement(
 					'button',
 					{ onClick: this.handleClick },
@@ -20597,6 +20604,8 @@ var _store = {
 	todos: []
 };
 
+var CHANGE_EVENT = "CHANGE_EVENT";
+
 var TodoStoreClass = function (_EventEmitter) {
 	_inherits(TodoStoreClass, _EventEmitter);
 
@@ -20617,6 +20626,11 @@ var TodoStoreClass = function (_EventEmitter) {
 			this.removeListener("CHANGE_EVENT", callback);
 		}
 	}, {
+		key: 'emitChange',
+		value: function emitChange() {
+			this.emit(CHANGE_EVENT);
+		}
+	}, {
 		key: 'getTodos',
 		value: function getTodos() {
 			return _store.todos;
@@ -20625,28 +20639,6 @@ var TodoStoreClass = function (_EventEmitter) {
 
 	return TodoStoreClass;
 }(_events.EventEmitter);
-
-_AppDispatcher2.default.register(function (action) {
-	switch (action.type) {
-		case _TodoActionTypes2.default.ADD_TODO:
-			var title = action.title.trim();
-			if (title) {
-				addTodo(title);
-				TodoStore.emit("CHANGE_EVENT");
-			}
-			break;
-		case _TodoActionTypes2.default.DELETE_TODO:
-			deleteTodo(action.id);
-			TodoStore.emit("CHANGE_EVENT");
-			break;
-		case _TodoActionTypes2.default.UPDATE_TODO:
-			updateTodo(action.id, action.isCompleted);
-			TodoStore.emit("CHANGE_EVENT");
-			break;
-		default:
-			return true;
-	}
-});
 
 function addTodo(title) {
 	var newTodo = {
@@ -20670,6 +20662,23 @@ function updateTodo(id, isCompleted) {
 	});
 	_store.todos[index].isCompleted = isCompleted;
 }
+
+_AppDispatcher2.default.register(function (action) {
+	switch (action.type) {
+		case _TodoActionTypes2.default.ADD_TODO:
+			addTodo(action.title);
+			break;
+		case _TodoActionTypes2.default.DELETE_TODO:
+			deleteTodo(action.id);
+			break;
+		case _TodoActionTypes2.default.UPDATE_TODO:
+			updateTodo(action.id, action.isCompleted);
+			break;
+		default:
+			return true;
+	}
+	TodoStore.emitChange();
+});
 
 var TodoStore = new TodoStoreClass();
 
