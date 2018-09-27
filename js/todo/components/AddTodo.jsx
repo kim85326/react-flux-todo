@@ -7,17 +7,17 @@ class AddTodo extends React.Component{
 		this.state = {
 			title: ""
 		}
-		this.handleChange = this.handleChange.bind(this);
-		this.handleClick = this.handleClick.bind(this);
+		this.handleInputChange = this.handleInputChange.bind(this);
+		this.handleButtonClick = this.handleButtonClick.bind(this);
 	}
 
-	handleChange(event){
+	handleInputChange(event){
 		this.setState({
 			title: event.target.value
 		});
 	}
 
-	handleClick(){
+	handleButtonClick(){
 		let title = this.state.title.trim();
 		if(title){
 			TodoAction.addTodo(title);
@@ -31,11 +31,11 @@ class AddTodo extends React.Component{
 		return (
 			<div>
 				<input 
-					type="text" 
-					onChange={this.handleChange} 
+					type="text"
+					onChange={this.handleInputChange}
 					value={this.state.title}
 				/>
-				<button onClick={this.handleClick}>add todo</button>
+				<button onClick={this.handleButtonClick}>add todo</button>
 			</div>
 		);
 	}

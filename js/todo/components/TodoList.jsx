@@ -9,8 +9,7 @@ class TodoList extends React.Component{
 
 	getTodoLis(){
 		let todoLis = [];
-		for(let index in this.props.todos){
-			const todo = this.props.todos[index];
+		for(let todo of this.props.todos){
 			todoLis.push(
 				<TodoItem 
 					key={todo.id}

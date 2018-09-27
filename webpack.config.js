@@ -1,5 +1,4 @@
 module.exports = {
-    mode: 'none',
     entry: './js/index.jsx',
     output: {
         filename: 'bundle.js',

@@ -2,19 +2,21 @@ import { EventEmitter } from 'events';
 import TodoActionTypes from './TodoActionTypes';
 import AppDispatcher from '../common/AppDispatcher';
 
-let _store = {
-	todos: []
-}
-
 const CHANGE_EVENT = "CHANGE_EVENT";
 
-class TodoStoreClass extends EventEmitter{
+class TodoStore extends EventEmitter{
+	constructor(){
+        super();
+        this._todos = [];
+        this.registerDispatcher();
+	}
+	
 	addChangeListener(callback){
-		this.on("CHANGE_EVENT", callback);
+		this.on(CHANGE_EVENT, callback);
 	}
 
 	removeChangeListener(callback){
-		this.removeListener("CHANGE_EVENT", callback);
+		this.removeListener(CHANGE_EVENT, callback);
 	}
 
 	emitChange(){
@@ -22,50 +24,50 @@ class TodoStoreClass extends EventEmitter{
 	}
 
 	getTodos(){
-		return _store.todos;
+		return this._todos;
+	}
+
+	_addTodo(title){
+		const newTodo = {
+			id: new Date().getTime(),
+			title,
+			isCompleted: false
+		};
+		this._todos.push(newTodo);
+	}
+	
+	_deleteTodo(id){
+		const index = this._todos.findIndex(todo =>
+			todo.id === id
+		);
+		this._todos.splice(index, 1);
+	}
+	
+	_updateTodo(id, isCompleted){
+		const index = this._todos.findIndex(todo =>
+			todo.id === id
+		);
+		this._todos[index].isCompleted = isCompleted;
+	}
+
+	registerDispatcher(){
+		AppDispatcher.register((action) => {
+			switch(action.type){
+				case TodoActionTypes.ADD_TODO:
+					this._addTodo(action.title);
+					break;
+				case TodoActionTypes.DELETE_TODO:
+					this._deleteTodo(action.id);
+					break;
+				case TodoActionTypes.UPDATE_TODO:
+					this._updateTodo(action.id, action.isCompleted);
+					break;
+				default:
+					return;
+			}
+			this.emitChange();
+		});
 	}
 }
 
-function addTodo(title){
-	const newTodo = {
-		id: new Date().getTime(),
-		title,
-		isCompleted: false
-	};
-	_store.todos.push(newTodo);
-}
-
-function deleteTodo(id){
-	const index = _store.todos.findIndex(todo =>
-		todo.id === id
-	);
-	_store.todos.splice(index, 1);
-}
-
-function updateTodo(id, isCompleted){
-	const index = _store.todos.findIndex(todo =>
-		todo.id === id
-	);
-	_store.todos[index].isCompleted = isCompleted;
-}
-
-AppDispatcher.register((action) => {
-	switch(action.type){
-		case TodoActionTypes.ADD_TODO:
-			addTodo(action.title);
-			break;
-		case TodoActionTypes.DELETE_TODO:
-			deleteTodo(action.id);
-			break;
-		case TodoActionTypes.UPDATE_TODO:
-			updateTodo(action.id, action.isCompleted);
-			break;
-		default:
-    		return true;
-	}
-	TodoStore.emitChange();
-});
-
-const TodoStore = new TodoStoreClass();
-
-export default TodoStore;
+export default new TodoStore();
